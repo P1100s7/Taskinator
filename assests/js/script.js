@@ -33,7 +33,7 @@ var taskFormHandler = function (event) {
   } else {
     var taskDataObj = {
       name: taskNameInputs,
-      type: taskTypeInputs,
+      type: taskTypeInputs
     };
     createTaskEl(taskDataObj);
   }
@@ -119,18 +119,22 @@ var completeEditTask = function (taskName, taskType, taskId) {
   // remove data attribute from form
   formEl.removeAttribute("data-task-id");
   // update formEl button to go back to saying "Add Task" instead of "Edit Task"
-  formEl.querySelector("#save-task").textContent = "Add Task";
+  // just changed document from formEl i think it was a typo
+  document.querySelector("#save-task").textContent = "Add Task";
 };
 
 var taskButtonHandler = function (event) {
   // get target element from event
   var targetEl = event.target;
 
+  // edit button was clicked
   if (targetEl.matches(".edit-btn")) {
     console.log("edit", targetEl);
     var taskId = targetEl.getAttribute("data-task-id");
     editTask(taskId);
-  } else if (targetEl.matches(".delete-btn")) {
+  } 
+  // delete button was clicked
+  else if (targetEl.matches(".delete-btn")) {
     console.log("delete", targetEl);
     var taskId = targetEl.getAttribute("data-task-id");
     deleteTask(taskId);
