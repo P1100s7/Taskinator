@@ -1,7 +1,8 @@
 //* after you copy this js corrently see 4.4.1 to finish this awful module 
-// the failuer appers to starting closer to 4.3.4 your js looks good i bealeave it has todo with the ids in your html so please reread from 4.3.4 to 4.4.1
+// for some reason the tasks still start at in progress when it says to do ur on the top of 4.4.6
 // finish this on the 18th you bitch ass mf
 
+var tasks = [];
 var taskIdCounter = 0;
 
 var formEl = document.querySelector("#task-form");
@@ -33,10 +34,13 @@ var taskFormHandler = function (event) {
   } else {
     var taskDataObj = {
       name: taskNameInputs,
-      type: taskTypeInputs
+      type: taskTypeInputs,
+      status: "To Do"
     };
     createTaskEl(taskDataObj);
   }
+  console.log(taskDataObj);
+  console.log(taskDataObj.status)
 };
 
 var createTaskEl = function (taskDataObj) {
@@ -57,7 +61,31 @@ var createTaskEl = function (taskDataObj) {
   //create task actions (buttons and select) for task
   var taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
-  tasksInProgressEl.appendChild(listItemEl);
+  
+  switch (taskDataObj.status) {
+    case "to do":
+      taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 0;
+      tasksToDoEl.append(listItemEl);
+      break;
+    case "in progress":
+      taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 1;
+      tasksInProgressEl.append(listItemEl);
+      break;
+    case "completed":
+      taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 2;
+      tasksCompletedEl.append(listItemEl);
+      break;
+    default:
+      console.log("Something went wrong!");
+  }
+
+  // takes the value from the id and adds it to taskDataObj which can then add the data to the tasks array 4.4.4
+  taskDataObj.id = taskIdCounter;
+
+  tasks.push(taskDataObj);
+
+  //4.4.5
+  saveTasks();
 
   //increase task counter for next unique id
   taskIdCounter++;
@@ -114,6 +142,17 @@ var completeEditTask = function (taskName, taskType, taskId) {
   taskSelected.querySelector("h3.task-name").textContent = taskName;
   taskSelected.querySelector("span.task-type").textContent = taskType;
 
+  // loop through tasks array and task object with the new content
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].name = taskName;
+      tasks[i].type = taskType;
+    }
+  };
+
+  // 4.4.5
+  saveTasks();
+
   alert("Task Updated!");
 
   // remove data attribute from form
@@ -161,6 +200,15 @@ var taskStatusChangeHandler = function (event) {
   } else if (statusValue === "completed") {
     tasksCompletedEl.appendChild(taskSelected);
   }
+
+  // update tasks in tasks array
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].status = statusValue);
+  }
+
+  // 4.4.5
+  saveTasks();
+
 };
 
 var editTask = function (taskId) {
@@ -195,6 +243,28 @@ var deleteTask = function (taskId) {
     ".task-item[data-task-id='" + taskId + "']"
   );
   taskSelected.remove();
+
+  //create new array to hold updated list of tasks
+  var updateTaskArr = [];
+
+  // loop through current tasks
+  for (var i = 0; i < tasks.length; i++) {
+    // if tasks[i].id doesnt match the value of taskId, lets keep that task and push it into the new array
+    if (tasks[i].id !== parseInt(taskId)) {
+      updateTaskArr.push(tasks[i]);
+    }
+  }
+
+  // reassign tasks array to be the same as updatedTaskArr
+  tasks = updateTaskArr;
+
+  // 4.4.5
+  saveTasks();
+};
+
+// 4.4.5
+var saveTasks = function() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
 // Create a new task
